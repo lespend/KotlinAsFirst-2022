@@ -28,6 +28,7 @@ class Tests {
         assertTrue(queenThreatens(3, 6, 7, 6))
         assertTrue(queenThreatens(8, 1, 1, 8))
         assertFalse(queenThreatens(7, 6, 5, 7))
+        assertFalse(queenThreatens(6, 1, 2, 7))
         assertTrue(queenThreatens(2, 3, 3, 4))
     }
 
@@ -65,5 +66,6 @@ class Tests {
         assertTrue(brickPasses(4, 4, 4, 4, 4))
         assertFalse(brickPasses(6, 5, 4, 3, 6))
         assertTrue(brickPasses(3, 2, 1, 1, 2))
+        assertFalse(brickPasses(1, 125, 152, 2, 95))
     }
 }
