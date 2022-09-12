@@ -161,7 +161,7 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    var maxAngle: Double = 0.0
+    var maxAngle = 0.0
     if (a >= b && a >= c) {
         maxAngle = acos((sqr(b) + sqr(c) - sqr(a)) / (2 * b * c))
     }
@@ -175,9 +175,9 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     maxAngle *= 180 / PI /* перевод из радиан в градусы */
     println(maxAngle)
     return when {
-        maxAngle.toInt() == 90 -> 1
-        (maxAngle > 0 && maxAngle < 90) -> 0
         (maxAngle > 90 && maxAngle < 180) -> 2
+        (maxAngle > 0 && maxAngle < 90) -> 0
+        maxAngle.toInt() == 90 -> 1
         else -> -1
     }
 }
