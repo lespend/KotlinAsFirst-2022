@@ -8,6 +8,7 @@ import kotlin.math.max
 import kotlin.math.sqrt
 import kotlin.math.acos
 import kotlin.math.PI
+import kotlin.math.abs
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
@@ -121,10 +122,12 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int {
+    val firstRook = kingX == rookX1 || kingY == rookY1
+    val secondRook = kingX == rookX2 || kingY == rookY2
     return when {
-        (kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2) -> 3
-        (kingX == rookX2 || kingY == rookY2) -> 2
-        (kingX == rookX1 || kingY == rookY1) -> 1
+        firstRook && secondRook -> 3
+        secondRook -> 2
+        firstRook -> 1
         else -> 0
     }
 }
@@ -144,10 +147,12 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
+    val rook = kingX == rookX || kingY == rookY
+    val bishop = abs(kingX - bishopX) == abs(kingY - bishopY)
     return when {
-        ((kingX + kingY == bishopX + bishopY) || (kingX - kingY == bishopX - bishopY)) && (kingX == rookX || kingY == rookY) -> 3
-        (kingX + kingY == bishopX + bishopY) || (kingX - kingY == bishopX - bishopY) -> 2
-        kingX == rookX || kingY == rookY -> 1
+        bishop && rook -> 3
+        bishop -> 2
+        rook -> 1
         else -> 0
     }
 }
@@ -161,19 +166,11 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    var maxAngle = 0.0
-    if (a >= b && a >= c) {
-        maxAngle = acos((sqr(b) + sqr(c) - sqr(a)) / (2 * b * c))
-    }
-    if (b >= a && b >= c) {
-        maxAngle = acos((sqr(a) + sqr(c) - sqr(b)) / (2 * a * c))
-    }
-    if (c >= a && c >= b) {
-        maxAngle = acos((sqr(a) + sqr(b) - sqr(c)) / (2 * a * b))
-    }
+    val maxSide = maxOf(a, b, c)
+    val minSide = minOf(a, b, c)
+    val middleSide = a + b + c - minSide - maxSide
+    val maxAngle = acos((sqr(middleSide) + sqr(minSide) - sqr(maxSide)) / (2 * middleSide * minSide)) * 180 / PI
 
-    maxAngle *= 180 / PI /* перевод из радиан в градусы */
-    println(maxAngle)
     return when {
         (maxAngle > 90 && maxAngle < 180) -> 2
         (maxAngle > 0 && maxAngle < 90) -> 0
@@ -198,8 +195,4 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
         (a in c..d && b in c .. d) -> (b - a)
         else -> -1
     }
-}
-
-fun main() {
-    triangleKind(3.0, 4.0, 5.0)
 }
