@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package lesson3.task1
 
 import kotlin.math.sqrt
@@ -233,7 +231,19 @@ fun isPalindrome(n: Int) = revert(n) == n
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean {
+    val lastNum = n % 10
+    var x = n / 10
+    var result = false
+    while (x > 0) {
+        if (x % 10 != lastNum) {
+            result = true
+            break
+        }
+        x /= 10
+    }
+    return result
+}
 
 /**
  * Средняя (4 балла)
@@ -244,7 +254,28 @@ fun hasDifferentDigits(n: Int): Boolean = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun sin(x: Double, eps: Double): Double = TODO()
+fun sin(x: Double, eps: Double): Double {
+    var result = 0.0
+    var i = 1
+    var element: Double
+    var elementNumerator = x % (2 * PI)
+    var elementDevider = 1.0
+    while (true) {
+        element = elementNumerator / elementDevider
+        if (element < eps) {
+            break
+        }
+        if (i % 2 == 0) {
+            result -= element
+        } else {
+            result += element
+        }
+        elementNumerator *= x * x
+        elementDevider *= 2 * i * (2 * i + 1)
+        i += 1
+    }
+    return result
+}
 
 /**
  * Средняя (4 балла)
@@ -255,7 +286,29 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun cos(x: Double, eps: Double): Double {
+    var result = 0.0
+    var i = 1
+    val n = x % (2 * PI)
+    var element: Double
+    var elementNumerator = 1.0
+    var elementDevider = 1.0
+    while (true) {
+        element = elementNumerator / elementDevider
+        if (element < eps) {
+            break
+        }
+        if (i % 2 == 0) {
+            result -= element
+        } else {
+            result += element
+        }
+        elementNumerator *= n * n
+        elementDevider *= 2 * i * (2 * i - 1)
+        i += 1
+    }
+    return result
+}
 
 /**
  * Сложная (4 балла)
@@ -266,7 +319,32 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun numberLength(n: Int): Int {
+    var x = n
+    var count = 0
+    while (x > 0) {
+        x /= 10
+        count++
+    }
+    return count
+}
+
+fun squareSequenceDigit(n: Int): Int {
+    var strLength = 0
+    var square: Int
+    var d: Int
+    var result = 0
+    for (i in 1..n) {
+        square = i * i
+        strLength += numberLength(square)
+        d = strLength - n
+        if (d >= 0) {
+            result = (square / Math.pow(10.0, d.toDouble()).toInt()) % 10 // отбрасывает лишние цифры и возвращает n-ую
+            break
+        }
+    }
+    return result
+}
 
 /**
  * Сложная (5 баллов)
@@ -277,4 +355,26 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var strLength = 2
+    var a = 1
+    var b = 1
+    var c: Int
+    var d: Int
+    var result = 0
+    for (i in 1..n) {
+        c = a + b
+        strLength += numberLength(c)
+        d = strLength - n
+        if (d >= 0) {
+            result = (c / Math.pow(10.0, d.toDouble()).toInt()) % 10 // отбрасывает лишние цифры и возвращает n-ую
+            break
+        }
+        a = b
+        b = c
+    }
+    return when (n) {
+        1, 2 -> 1
+        else -> result
+    }
+}

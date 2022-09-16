@@ -1,14 +1,8 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package lesson2.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import kotlin.math.max
-import kotlin.math.sqrt
-import kotlin.math.acos
-import kotlin.math.PI
-import kotlin.math.abs
+import kotlin.math.*
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
 // Максимальное количество баллов = 6
@@ -189,10 +183,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
     return when {
-        (c in a..b && d in a .. b) -> (d - c)
-        (c in a..d && b in a .. d && b >= c) -> (b - c)
-        (a in c..b && d in c .. b && d >= a) -> (d - a)
-        (a in c..d && b in c .. d) -> (b - a)
-        else -> -1
+        (a < c && b < c) || (a > d && b > d) -> -1
+        else -> abs(max(a, c) - min(b, d))
     }
 }
