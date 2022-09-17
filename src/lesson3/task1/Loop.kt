@@ -1,10 +1,6 @@
 package lesson3.task1
 
-import kotlin.math.sqrt
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.PI
-import kotlin.math.abs
+import kotlin.math.*
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
@@ -261,7 +257,7 @@ fun sin(x: Double, eps: Double): Double {
     var i = 1
     val n = if (x > 0) x % (2 * PI) else (2 * PI) + (x % (2 * PI))
     var element: Double
-    var elementNumerator = x
+    var elementNumerator = n
     var elementDevider = 1.0
     while (true) {
         element = elementNumerator / elementDevider
