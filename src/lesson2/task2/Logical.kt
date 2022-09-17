@@ -1,8 +1,7 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package lesson2.task2
 
 import lesson1.task1.sqr
+import lesson1.task1.trackLength
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.max
@@ -64,7 +63,7 @@ fun daysInMonth(month: Int, year: Int): Int {
 fun circleInside(
     x1: Double, y1: Double, r1: Double,
     x2: Double, y2: Double, r2: Double
-): Boolean = sqrt((x2 - x1).pow(2) + (y2 - y1).pow(2)) + r1 <= r2
+): Boolean = trackLength(x1, y1, x2, y2) + r1 <= r2
 
 /**
  * Средняя (3 балла)
@@ -76,8 +75,8 @@ fun circleInside(
  * Вернуть true, если кирпич пройдёт
  */
 fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
-    val min1: Int = min(min(a, b), c)
-    val min3: Int = max(max(a, b), c)
-    val min2: Int = (a + b + c) - min1 - min3
+    val min1 = min(min(a, b), c)
+    val min3 = max(max(a, b), c)
+    val min2 = (a + b + c) - min1 - min3
     return ((min1 <= r) && (min2 <= s)) || ((min2 <= r) && (min1 <= s))
 }

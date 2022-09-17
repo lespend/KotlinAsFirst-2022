@@ -1,7 +1,10 @@
 package lesson3.task1
 
 import kotlin.math.sqrt
-import kotlin.math.*
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.PI
+import kotlin.math.abs
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
@@ -72,17 +75,16 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var number = n
+    var number = abs(n)
     var counter = 0
-
-    if (number == 0) {
-        return 1
-    }
     while (number > 0) {
         number /= 10
         counter++
     }
-    return counter
+    return when (n) {
+        0 -> 1
+        else -> counter
+    }
 }
 
 /**
@@ -257,8 +259,9 @@ fun hasDifferentDigits(n: Int): Boolean {
 fun sin(x: Double, eps: Double): Double {
     var result = 0.0
     var i = 1
+    val n = if (x > 0) x % (2 * PI) else (2 * PI) + (x % (2 * PI))
     var element: Double
-    var elementNumerator = x % (2 * PI)
+    var elementNumerator = x
     var elementDevider = 1.0
     while (true) {
         element = elementNumerator / elementDevider
@@ -270,7 +273,7 @@ fun sin(x: Double, eps: Double): Double {
         } else {
             result += element
         }
-        elementNumerator *= x * x
+        elementNumerator *= n * n
         elementDevider *= 2 * i * (2 * i + 1)
         i += 1
     }
@@ -289,7 +292,7 @@ fun sin(x: Double, eps: Double): Double {
 fun cos(x: Double, eps: Double): Double {
     var result = 0.0
     var i = 1
-    val n = x % (2 * PI)
+    val n = if (x > 0) x % (2 * PI) else (2 * PI) + (x % (2 * PI))
     var element: Double
     var elementNumerator = 1.0
     var elementDevider = 1.0
@@ -319,16 +322,6 @@ fun cos(x: Double, eps: Double): Double {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun numberLength(n: Int): Int {
-    var x = n
-    var count = 0
-    while (x > 0) {
-        x /= 10
-        count++
-    }
-    return count
-}
-
 fun squareSequenceDigit(n: Int): Int {
     var strLength = 0
     var square: Int
@@ -336,7 +329,7 @@ fun squareSequenceDigit(n: Int): Int {
     var result = 0
     for (i in 1..n) {
         square = i * i
-        strLength += numberLength(square)
+        strLength += digitNumber(square)
         d = strLength - n
         if (d >= 0) {
             result = (square / Math.pow(10.0, d.toDouble()).toInt()) % 10 // отбрасывает лишние цифры и возвращает n-ую
@@ -364,7 +357,7 @@ fun fibSequenceDigit(n: Int): Int {
     var result = 0
     for (i in 1..n) {
         c = a + b
-        strLength += numberLength(c)
+        strLength += digitNumber(c)
         d = strLength - n
         if (d >= 0) {
             result = (c / Math.pow(10.0, d.toDouble()).toInt()) % 10 // отбрасывает лишние цифры и возвращает n-ую
