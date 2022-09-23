@@ -256,7 +256,10 @@ fun convert(n: Int, base: Int): List<Int> {
         result.add(0, x % base)
         x /= base
     }
-    return result
+    return when (n) {
+        0 -> mutableListOf<Int>(0)
+        else -> result
+    }
 }
 
 
@@ -280,7 +283,10 @@ fun convertToString(n: Int, base: Int): String {
         result = if (num > 9) alphabet[num - 10] + result else num.toString() + result
         x /= base
     }
-    return result
+    return when (n) {
+        0 -> "0"
+        else -> result
+    }
 }
 
 /**
