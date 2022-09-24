@@ -340,7 +340,8 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
         for (j in names.indices) {
             emptyHandshakes += (names.toSet() + friendLists[j] - names.toSet())
             if (names[i] in friendLists[j]) {
-                result[names[j]] = (friendLists[i] + friendLists[j] - names[j]).sorted().toSet()
+                result[names[j]] = friendLists[j] + friendLists[i] - names[j]
+                friendLists[j] += friendLists[i] - names[j]
             }
         }
     }
