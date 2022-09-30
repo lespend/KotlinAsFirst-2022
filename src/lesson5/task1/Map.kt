@@ -2,7 +2,6 @@
 
 package lesson5.task1
 
-import kotlin.math.max
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -404,35 +403,26 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun printBag(list: List<List<Int>>) {
-    for (l in list) {
-        println(l)
-    }
-}
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    val m = mutableListOf<Int>(0)
-    val c = mutableListOf<Int>(0)
-    val names = mutableListOf<String>("")
-    val table = mutableListOf<MutableList<Int>>()
-    val result = mutableSetOf<String>()
-    for ((name, parametrs) in treasures) {
-        m.add(parametrs.first)
-        c.add(parametrs.second)
-        names.add(name)
+    val w = mutableListOf(0)
+    val c = mutableListOf(0)
+    val d = MutableList(treasures.size + 1) { MutableList(capacity + 1) { 0 } }
+    val treasuresNames = treasures.keys.toList()
+    val indexInBag = MutableList(treasures.size + 1) { MutableList(capacity + 1) { mutableListOf<String>() } }
+    for ((weight, price) in treasures.values) {
+        w.add(weight)
+        c.add(price)
     }
-    for (i in 0 until m.size) {
-        table.add(mutableListOf())
+    for (i in 1..treasures.size) {
         for (j in 0..capacity) {
-            table[i].add(0)
-        }
-    }
-    for (i in 1 until m.size) {
-        for (j in 0..capacity) {
-            table[i][j] = table[i - 1][j]
-            if (j - m[i] >= 0 && table[i - 1][j - m[i]] + c[i] >= table[i][j]) {
-                result.add(names[i])
+            if (j - w[i] >= 0 && d[i - 1][j - w[i]] + c[i] > d[i - 1][j]) {
+                d[i][j] = d[i - 1][j - w[i]] + c[i]
+                indexInBag[i][j] += indexInBag[i - 1][j - w[i]] + treasuresNames[i - 1]
+            } else {
+                d[i][j] = d[i - 1][j]
+                indexInBag[i][j] += indexInBag[i - 1][j]
             }
         }
     }
-    return result
+    return indexInBag[treasures.size][capacity].toSet()
 }
