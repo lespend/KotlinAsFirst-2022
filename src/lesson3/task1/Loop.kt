@@ -77,10 +77,7 @@ fun digitNumber(n: Int): Int {
         number /= 10
         counter++
     }
-    return when (n) {
-        0 -> 1
-        else -> counter
-    }
+    return if (n == 0) 1 else counter
 }
 
 /**
@@ -123,16 +120,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    var maxDiv = 0
-    for (i in n - 1 downTo 1) {
-        if (n % i == 0) {
-            maxDiv = i
-            break
-        }
-    }
-    return maxDiv
-}
+fun maxDivisor(n: Int) = n / minDivisor(n)
 
 /**
  * Простая (2 балла)
@@ -232,15 +220,13 @@ fun isPalindrome(n: Int) = revert(n) == n
 fun hasDifferentDigits(n: Int): Boolean {
     val lastNum = n % 10
     var x = n / 10
-    var result = false
     while (x > 0) {
         if (x % 10 != lastNum) {
-            result = true
-            break
+            return true
         }
         x /= 10
     }
-    return result
+    return false
 }
 
 /**
@@ -362,8 +348,5 @@ fun fibSequenceDigit(n: Int): Int {
         a = b
         b = c
     }
-    return when (n) {
-        1, 2 -> 1
-        else -> result
-    }
+    return if (n in 1..2) 1 else result
 }
