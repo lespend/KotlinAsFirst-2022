@@ -351,12 +351,12 @@ fun fromRoman(roman: String): Int {
         if (roman[i].toString() !in romanToArabic.keys) return -1
         for ((key, value) in romanToArabic) {
             while (str.contains(key)) {
-                str = str.removeRange(str.indexOf(key)..str.indexOf(key) + key.length - 1)
+                str = str.removeRange(str.indexOf(key) until str.indexOf(key) + key.length)
                 res += value
             }
         }
     }
-    return res
+    return if (roman == "") -1 else res
 }
 
 /**
@@ -396,64 +396,77 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    val result = mutableListOf<Int>()
-    var sensor = cells / 2
-    var commandCounter = 0
     var commandIndex = 0
+    var commandCounter = 0
+    var conveyer = mutableListOf<Int>()
+    val allowedChars = setOf('[', ']', ' ', '+', '-', '>', '<')
     for (i in 0 until cells) {
-        result.add(0)
+        conveyer.add(0)
     }
-
-    while (commandCounter < limit && commandIndex < commands.length) {
-        if (sensor >= cells) {
-            throw IllegalStateException()
+    var state = cells / 2
+    if (!allowedChars.containsAll(commands.toSet()) || !breaketsCorrectly(commands)) {
+        throw java.lang.IllegalArgumentException()
+    }
+    val breaketsMap = breakets(commands)
+    while (commandIndex < commands.length && commandCounter < limit) {
+        if (state >= cells || state < 0) {
+            throw java.lang.IllegalStateException()
         }
-
         var command = commands[commandIndex]
-
         if (command == '>') {
-            sensor += 1
+            state += 1
         } else if (command == '<') {
-            sensor -= 1
+            state -= 1
         } else if (command == '+') {
-            result[sensor] += 1
+            conveyer[state] += 1
         } else if (command == '-') {
-            result[sensor] -= 1
-        } else if (command == '[' && result[sensor] == 0) {
-            var counter = indexAllOf(commands.substring(0, commandIndex), "]").size
-            commandIndex = indexAllOf(commands, "]")[counter]
-        } else if (command == ']' && result[sensor] != 0) {
-            var counter = indexAllOf(commands.substring(0, commandIndex), "[").size
-            commandIndex = indexAllOf(commands, "[")[counter - 1]
+            conveyer[state] -= 1
+        } else if (command == '[' && conveyer[state] == 0) {
+            commandIndex = breaketsMap.get(commandIndex)!!
+        } else if (command == ']' && conveyer[state] != 0) {
+            commandIndex = getKey(breaketsMap, commandIndex)
         }
-
-        commandCounter += 1
         commandIndex += 1
+        commandCounter += 1
+    }
+    return conveyer
+}
+
+
+fun breakets(str: String): Map<Int, Int> {
+    val stack = mutableListOf<Int>()
+    val result = mutableMapOf<Int, Int>()
+    for (i in str.indices) {
+        if (str[i] == '[') {
+            stack.add(i)
+        } else if (str[i] == ']') {
+            result[stack.last()] = i
+            stack.removeLast()
+        }
     }
     return result
 }
 
-fun bracketsCorrect(str: String): Boolean {
-    var counter = 0
+fun breaketsCorrectly(str: String): Boolean {
+    var balance = 0
     for (x in str) {
         if (x == '[') {
-            counter += 1
+            balance += 1
         } else if (x == ']') {
-            counter -= 1
+            balance -= 1
         }
-        if (counter < 0) {
+        if (balance < 0) {
             return false
         }
     }
-    return true
+    return balance == 0
 }
 
-fun indexAllOf(str: String, search: String): List<Int> {
-    var index = str.indexOf(search)
-    val result = mutableListOf<Int>()
-    while (index != -1) {
-        result.add(index)
-        index = str.indexOf(search, index + 1)
+fun getKey(map: Map<Int, Int>, target: Int): Int {
+    for ((key, value) in map) {
+        if (value == target) {
+            return key
+        }
     }
-    return result
+    return -1
 }

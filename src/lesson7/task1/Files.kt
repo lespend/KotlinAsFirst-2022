@@ -63,7 +63,13 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    File(inputName).bufferedReader().forEachLine { line ->
+        if (line.getOrNull(0) != '_') {
+            writer.appendLine(line)
+        }
+    }
+    writer.close()
 }
 
 /**
@@ -75,7 +81,27 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    fun countFinds(str: String, search: String): Int {
+        var index = str.indexOf(search, ignoreCase = true)
+        var counter = 0
+        while (index != -1) {
+            index = str.indexOf(search, index + 1, ignoreCase = true)
+            counter++
+        }
+        return counter
+    }
+
+    val result = mutableMapOf<String, Int>()
+    for (search in substrings) {
+        var counter = 0
+        File(inputName).bufferedReader().forEachLine { line ->
+            counter += countFinds(line, search)
+        }
+        result[search] = counter
+    }
+    return result
+}
 
 
 /**
@@ -92,7 +118,25 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val letters = listOf('ж', 'ч', 'ш', 'щ')
+    val rightLettersAfter = mapOf('ы' to 'и', 'я' to 'а', 'ю' to 'у')
+    val writer = File(outputName).writer()
+    File(inputName).bufferedReader().forEachLine { line ->
+        var rightString = line
+        for (i in 0 until line.length - 1) {
+            val chr1 = line[i].lowercaseChar()
+            val chr2 = line[i + 1].lowercaseChar()
+            val registerChange = chr2 != line[i + 1]
+            if (chr1 in letters && chr2 in rightLettersAfter.keys) {
+                rightString = rightString.replaceRange(i + 1..i + 1, rightLettersAfter[chr2].toString())
+                if (registerChange) {
+                    rightString = rightString.replaceRange(i + 1..i + 1, rightLettersAfter[chr2].toString().toUpperCase())
+                }
+            }
+        }
+        writer.appendLine(rightString)
+    }
+    writer.close()
 }
 
 /**

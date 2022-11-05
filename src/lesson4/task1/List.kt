@@ -145,6 +145,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
     }
     return list
 }
+
 /**
  * Средняя (3 балла)
  *
@@ -229,10 +230,7 @@ fun convert(n: Int, base: Int): List<Int> {
         result.add(0, x % base)
         x /= base
     }
-    return when (n) {
-        0 -> mutableListOf<Int>(0)
-        else -> result
-    }
+    return result
 }
 
 
@@ -248,18 +246,12 @@ fun convert(n: Int, base: Int): List<Int> {
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun convertToString(n: Int, base: Int): String {
-    val alphabet = "abcdefghijklmnopqrstuvwxyz"
+    val convertNumber = convert(n, base)
     var result = ""
-    var x = n
-    while (x > 0) {
-        val num = x % base
-        result = if (num > 9) alphabet[num - 10] + result else num.toString() + result
-        x /= base
+    for (i in convertNumber) {
+        result += if (i > 9) (i - 9 + 96).toChar() else i.toString()
     }
-    return when (n) {
-        0 -> "0"
-        else -> result
-    }
+    return if (n == 0) "0" else result
 }
 
 /**
@@ -290,18 +282,16 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * (например, str.toInt(base)), запрещается.
  */
 fun decimalFromString(str: String, base: Int): Int {
-    val alphabet = "abcdefghijklmnopqrstuvwxyz"
-    var element: Char
-    var result = 0
-    for (i in 0 until str.length) {
-        element = str[i]
-        if (element.isDigit()) {
-            result += element.digitToInt() * base.toDouble().pow(str.length - i - 1).toInt()
+    var sum = 0.0
+    for (i in str.indices) {
+        val x = str[i]
+        if (x.isDigit()) {
+            sum += x.digitToInt() * base.toDouble().pow(str.length - i - 1)
         } else {
-            result += (alphabet.indexOf(element, 0) + 10) * base.toDouble().pow(str.length - i - 1).toInt()
+            sum += (x.code - 87) * base.toDouble().pow(str.length - i - 1)
         }
     }
-    return result
+    return sum.toInt()
 }
 
 /**
@@ -313,8 +303,8 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    var arabicList = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-    var romanList = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
+    val arabicList = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
+    val romanList = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
     var result = ""
     var number = n
     for (i in arabicList.indices) {
@@ -323,6 +313,7 @@ fun roman(n: Int): String {
     }
     return result
 }
+
 /**
  * Очень сложная (7 баллов)
  *
@@ -333,53 +324,52 @@ fun roman(n: Int): String {
 fun russian(n: Int): String {
     var res = ""
     val x = n.toString()
-    var first: Int
-    var list1 = listOf(
+    val list1 = listOf(
         "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять", "десять",
         "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать",
         "восемнадцать", "девятнадцать", "сорок", "девяносто", "сто", "двести", "триста", "четыреста"
     )
-    var list2 = listOf(
+    val list2 = listOf(
         "одна", "две"
     )
     //var list2 = listOf()
     if (n in 1..19) {
         res = list1[n - 1]
     } else if (n in 1 until 100) {
-        first = x[0].digitToInt()
-        res = if (first in 2..3) list1[n / 10 - 1] + "дцать" else res
-        res = if (first in 5..8) list1[n / 10 - 1] + "десят" else res
+        val first = x[0].digitToInt()
+        res = if (first in 2..3) "${list1[n / 10 - 1]}дцать" else res
+        res = if (first in 5..8) "${list1[n / 10 - 1]}десят" else res
         res = if (first == 4) list1[19] else res
         res = if (first == 9) list1[20] else res
-        res = if (x[1] == '0') res else res + " " + russian(n % 10)
+        res = if (x[1] == '0') res else "$res ${russian(n % 10)}"
     } else if (n in 1 until 1000) {
-        first = x[0].digitToInt()
+        val first = x[0].digitToInt()
         res = if (first == 1) list1[21] else res
         res = if (first == 2) list1[22] else res
         res = if (first == 3) list1[23] else res
         res = if (first == 4) list1[24] else res
-        res = if (first in 5..9) list1[first - 1] + "сот" else res
-        res = if (x.toInt() % 100 == 0) res else res + " " + russian(n % 100)
+        res = if (first in 5..9) "${list1[first - 1]}сот" else res
+        res = if (x.toInt() % 100 == 0) res else "$res ${russian(n % 100)}"
     } else if (n in 1 until 10000) {
-        first = x[0].digitToInt()
-        res = if (first == 1) list2[0] + " тысяча" else res
-        res = if (first == 2) list2[1] + " тысячи" else res
-        res = if (first in 3..4) russian(first) + " тысячи" else res
-        res = if (first in 5..9) russian(first) + " тысяч" else res
-        res = if (n % 1000 == 0) res else res + " " + russian(n % 1000)
+        val first = x[0].digitToInt()
+        res = if (first == 1) "${list2[0]} тысяча" else res
+        res = if (first == 2) "${list2[1]} тысячи" else res
+        res = if (first in 3..4) "${russian(first)} тысячи" else res
+        res = if (first in 5..9) "${russian(first)} тысяч" else res
+        res = if (n % 1000 == 0) res else "$res ${russian(n % 1000)}"
     } else if (n in 1 until 100000) {
-        first = n / 1000
+        val first = n / 1000
         if (first in 10..20 || first % 10 == 0) {
-            res = russian(first) + " тысяч " + russian(n % 1000)
+            res = "${russian(first)} тысяч ${russian(n % 1000)}"
         } else {
-            res = russian(x[0].digitToInt() * 10) + " " + russian(n % 10000)
+            res = "${russian(x[0].digitToInt() * 10)} ${russian(n % 10000)}"
         }
     } else if (n in 1 until 1000000) {
-        first = n / 1000
+        val first = n / 1000
         if (first % 100 == 0) {
-            res = russian(first) + " тысяч " + russian(n % 1000)
+            res = "${russian(first)} тысяч ${russian(n % 1000)}"
         } else {
-            res = russian(first / 100 * 100) + " " + russian(n % 100000)
+            res = "${russian(first / 100 * 100)} ${russian(n % 100000)}"
         }
     }
     return res.trim()

@@ -120,13 +120,12 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
-    var isContainsIn = true
     for (key in a.keys) {
         if (a[key] != b[key]) {
-            isContainsIn = false
+            return false
         }
     }
-    return isContainsIn
+    return true
 }
 
 /**
@@ -144,11 +143,7 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  *     -> a changes to mutableMapOf() aka becomes empty
  */
 fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
-    for ((key, value) in b) {
-        if (containsIn(mapOf(key to value), a)) {
-            a.remove(key)
-        }
-    }
+    b.forEach { (key, value) -> if (a[key] == b[key]) a.remove(key) }
 }
 
 /**
@@ -199,18 +194,8 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val sumStockPrices = mutableMapOf<String, Double>()
-    val countStockPrices = mutableMapOf<String, Double>()
-    for ((name, coast) in stockPrices) {
-        sumStockPrices[name] = sumStockPrices.getOrDefault(name, 0.0) + coast
-        countStockPrices[name] = countStockPrices.getOrDefault(name, 0.0) + 1.0
-    }
-    for ((key, value) in sumStockPrices) {
-        sumStockPrices[key] = value / countStockPrices.getOrDefault(key, 1.0)
-    }
-    return sumStockPrices
-}
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>) =
+    stockPrices.groupBy { it.first }.map { (key, value) -> key to value.map { it.second }.average() }.toMap()
 
 /**
  * Средняя (4 балла)
@@ -371,15 +356,14 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    val mp = mutableMapOf<Int, Int>()
     for (i in list.indices) {
-        for (j in i + 1 until list.size) {
-            val sum = list[i] + list[j]
-            if (sum == number) {
-                return (i to j)
-            }
+        if ((number - list[i]) in mp.keys) {
+            return mp[number - list[i]]!! to i
         }
+        mp[list[i]] = i
     }
-    return (-1 to -1)
+    return -1 to -1
 }
 
 /**
