@@ -34,6 +34,7 @@ class Tests {
     @Test
     @Tag("4")
     fun dateStrToDigit() {
+        assertEquals("", dateStrToDigit("aaaaaaaa aaaaaaa aaaaaa"))
         assertEquals("15.07.2016", dateStrToDigit("15 июля 2016"))
         assertEquals("", dateStrToDigit("3 мартобря 1918"))
         assertEquals("18.11.2018", dateStrToDigit("18 ноября 2018"))
@@ -103,6 +104,7 @@ class Tests {
     @Test
     @Tag("6")
     fun firstDuplicateIndex() {
+        assertEquals(8, firstDuplicateIndex("a d a n a a a a a a"))
         assertEquals(-1, firstDuplicateIndex("Привет"))
         assertEquals(9, firstDuplicateIndex("Он пошёл в в школу"))
         assertEquals(40, firstDuplicateIndex("Яблоко упало на ветку с ветки оно упало на на землю"))
@@ -131,6 +133,7 @@ class Tests {
     @Test
     @Tag("7")
     fun computeDeviceCells() {
+        assertThrows(IllegalStateException::class.java) { computeDeviceCells(1, "-[+]<", 500) }
         assertEquals(
             listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2),
             computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 256)

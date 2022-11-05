@@ -3,9 +3,6 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
-import java.lang.IllegalStateException
-import kotlin.IllegalArgumentException
-import kotlin.math.max
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -80,7 +77,7 @@ fun main() {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
-    val mounths = mapOf(
+    val months = mapOf(
         "января" to 1,
         "февраля" to 2,
         "марта" to 3,
@@ -96,11 +93,11 @@ fun dateStrToDigit(str: String): String {
     )
     val parts = str.split(" ")
     if (parts.size != 3) return ""
-    val day = parts[0].toInt()
-    val mounth = mounths[parts[1]]
-    val year = parts[2].toInt()
-    if (mounth == null || day > daysInMonth(mounth, year)) return ""
-    return String.format("%02d.%02d.%d", day, mounth, year)
+    val day = parts[0].toIntOrNull()
+    val month = months[parts[1]]
+    val year = parts[2].toIntOrNull()
+    if (day == null || year == null || month == null || day > daysInMonth(month, year)) return ""
+    return String.format("%02d.%02d.%d", day, month, year)
 }
 
 /**
@@ -114,7 +111,7 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val namesOfMounths = listOf(
+    val namesOfMonths = listOf(
         "января",
         "февраля",
         "марта",
@@ -132,10 +129,10 @@ fun dateDigitToStr(digital: String): String {
     if (parts.size != 3) return ""
     try {
         val day = parts[0].toInt()
-        val mounth = parts[1].toInt()
+        val month = parts[1].toInt()
         val year = parts[2].toInt()
-        if (mounth !in 1..12 || day > daysInMonth(mounth, year)) return ""
-        return String.format("%d %s %d", day, namesOfMounths[mounth - 1], year)
+        if (month !in 1..12 || day > daysInMonth(month, year)) return ""
+        return String.format("%d %s %d", day, namesOfMonths[month - 1], year)
     } catch (e: NumberFormatException) {
         return ""
     }
@@ -183,10 +180,9 @@ fun flattenPhoneNumber(phone: String): String {
 fun bestLongJump(jumps: String): Int {
     val allowedSymbols = listOf("-", "%")
     val parts = jumps.split(" ")
-    var isHaveDigit = false
     var result = -1
     for (part in parts) {
-        var number = part.toIntOrNull()
+        val number = part.toIntOrNull()
         if (number == null) {
             if (part !in allowedSymbols) {
                 return -1
@@ -216,7 +212,7 @@ fun bestHighJump(jumps: String): Int {
     val parts = jumps.split(" ")
     var result = -1
     for (i in parts.indices) {
-        var number = parts[i].toIntOrNull()
+        val number = parts[i].toIntOrNull()
         if (number == null) {
             if (!allowed.containsAll(parts[i].toSet())) {
                 return -1
@@ -290,7 +286,7 @@ fun firstDuplicateIndex(str: String): Int {
         if (parts[i].equals(parts[i + 1], ignoreCase = true)) {
             return str.indexOf(parts[i], length, ignoreCase = true)
         }
-        length += parts[i].length
+        length += parts[i].length + 1
     }
     return -1
 }
@@ -310,7 +306,7 @@ fun mostExpensive(description: String): String {
     var maxPair = ("" to 0.0)
     if (description == "") return ""
     for (pair in description.split("; ")) {
-        var sep = pair.split(" ")
+        val sep = pair.split(" ")
         if (sep[1].toDouble() > maxPair.second) {
             maxPair = (sep[0] to sep[1].toDouble())
         }
@@ -398,7 +394,7 @@ fun fromRoman(roman: String): Int {
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var commandIndex = 0
     var commandCounter = 0
-    var conveyer = mutableListOf<Int>()
+    val conveyer = mutableListOf<Int>()
     val allowedChars = setOf('[', ']', ' ', '+', '-', '>', '<')
     for (i in 0 until cells) {
         conveyer.add(0)
@@ -409,10 +405,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     }
     val breaketsMap = breakets(commands)
     while (commandIndex < commands.length && commandCounter < limit) {
-        if (state >= cells || state < 0) {
-            throw java.lang.IllegalStateException()
-        }
-        var command = commands[commandIndex]
+        val command = commands[commandIndex]
         if (command == '>') {
             state += 1
         } else if (command == '<') {
@@ -422,9 +415,13 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         } else if (command == '-') {
             conveyer[state] -= 1
         } else if (command == '[' && conveyer[state] == 0) {
-            commandIndex = breaketsMap.get(commandIndex)!!
+            commandIndex = breaketsMap[commandIndex]!!
         } else if (command == ']' && conveyer[state] != 0) {
             commandIndex = getKey(breaketsMap, commandIndex)
+        }
+
+        if (state >= cells || state < 0) {
+            throw java.lang.IllegalStateException()
         }
         commandIndex += 1
         commandCounter += 1

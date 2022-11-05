@@ -212,18 +212,8 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>) =
  *     "печенье"
  *   ) -> "Мария"
  */
-fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var pairMinPrice: Pair<String, Double>? = null
-    for ((productName, productValue) in stuff) {
-        if (productValue.first == kind && pairMinPrice == null) {
-            pairMinPrice = (productName to productValue.second)
-        }
-        if (productValue.first == kind && productValue.second < pairMinPrice!!.second) {
-            pairMinPrice = (productName to productValue.second)
-        }
-    }
-    return pairMinPrice?.first
-}
+fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String) =
+    stuff.filter { it.value.first == kind }.minByOrNull { it.value.second }?.key
 
 /**
  * Средняя (3 балла)
@@ -235,7 +225,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean =
-    (word.toSet().sorted() == chars.toSet().sorted() || word == "")
+    (chars.toSet().containsAll(word.toSet()) || word == "")
 
 /**
  * Средняя (4 балла)
@@ -269,16 +259,8 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean {
-    for (i in words.indices) {
-        for (j in i + 1 until words.size) {
-            if (words[i].toSet() == words[j].toSet() && words[i].length == words[j].length) {
-                return true
-            }
-        }
-    }
-    return false
-}
+fun hasAnagrams(words: List<String>) =
+    words.map { it.toCharArray().sorted().joinToString("") }.toSet().size != words.size
 
 /**
  * Сложная (5 баллов)
