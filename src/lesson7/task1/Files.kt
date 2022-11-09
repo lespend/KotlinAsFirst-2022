@@ -2,6 +2,7 @@
 
 package lesson7.task1
 
+import ru.spbstu.wheels.toMap
 import java.io.File
 
 // Урок 7: работа с файлами
@@ -157,7 +158,16 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    var reader = File(inputName).bufferedReader()
+    val writer = File(outputName).bufferedWriter()
+    val size = reader.readLines().map { it.trim().length }.sortedDescending()[0]
+    reader.close()
+    reader = File(inputName).bufferedReader()
+    reader.forEachLine { line ->
+        var spaceNumber = (size - line.trim().length) / 2
+        writer.appendLine(" ".repeat(spaceNumber) + line.trim())
+    }
+    writer.close()
 }
 
 /**
@@ -188,7 +198,26 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    var reader = File(inputName).bufferedReader()
+    val size = reader.readLines().map { it.trim().length }.sortedDescending()[0]
+    val writer = File(outputName).bufferedWriter()
+    reader.close()
+    reader = File(inputName).bufferedReader()
+    reader.forEachLine { line ->
+        var str = line.trim()
+        var strParts = str.split(" ").toMutableList()
+        if (strParts.size < 2) {
+            writer.appendLine(str)
+        } else {
+            var spaceNumber = (size - str.length) / (strParts.size - 1)
+            var spaceNumberDiv = (size - str.length) % (strParts.size - 1)
+            for (i in 1..spaceNumberDiv) {
+                strParts[i - 1] += " "
+            }
+            writer.appendLine(strParts.joinToString(" ".repeat(spaceNumber + 1)))
+        }
+    }
+    writer.close()
 }
 
 /**
@@ -211,7 +240,30 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val reader = File(inputName).reader()
+    val mps = mutableMapOf<String, Int>()
+    var chr = reader.read()
+    var word = ""
+    while (chr != -1) {
+        if (Regex("[a-zA-Zа-яА-ЯёЁ]").containsMatchIn(chr.toChar().toString())) {
+            word += chr.toChar().lowercaseChar()
+        } else if (word != "") {
+            mps[word] = mps.getOrDefault(word, 0) + 1
+            word = ""
+        }
+        chr = reader.read()
+    }
+    if (mps.size >= 20) {
+        var sortedMps = mps.entries.sortedByDescending { it.value }
+        var index = 20
+        while (sortedMps[index] == sortedMps[index + 1]) {
+            index++
+        }
+        return sortedMps.subList(0, index + 1).toMap()
+    }
+    return mps
+}
 
 /**
  * Средняя (14 баллов)
@@ -249,7 +301,11 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    val reader = File(inputName).bufferedReader()
+    val writer = File(outputName).bufferedWriter()
+    reader.forEachLine { line ->
+        println(line.map { chr -> if (chr in dictionary) dictionary[chr] else chr })
+    }
 }
 
 /**
